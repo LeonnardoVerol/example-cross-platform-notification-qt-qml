@@ -3,19 +3,7 @@
 
 #include <QObject>
 
-#include "src/Adapters/DesktopAdapter.h"
-
-// Check docs for a better-suited approach
-#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-    #define MOBILE_OS
-#endif
-#if defined(Q_OS_WINDOWS) || defined(Q_OS_UNIX) || defined(Q_OS_MACOS)
-    #define DESKTOP_OS
-#endif
-#if !defined(MOBILE_OS) && defined(DESKTOP_OS)
-    #define IS_DESKTOP
-#endif
-
+#include "src/Adapters/OSAdapter.h"
 
 class ApplicationManager : public QObject
 {
@@ -65,6 +53,7 @@ signals:
     void quit();
 
 private slots:
+    OSAdapter* buildAdapter();
     void iconActivated(int reason); // QSystemTrayIcon::ActivationReason
     void notificationClicked();
     void refreshIcon();
@@ -76,11 +65,7 @@ private:
     int m_notificationDuration;
     QString m_notificationTitle;
     QString m_notificationBody;
-
-#if defined(IS_DESKTOP)
-    std::shared_ptr<DesktopAdapter> desktopAdapter;
-#endif
-
+    OSAdapter *osAdapter;
 };
 
 #endif // APPLICATIONMANAGER_H

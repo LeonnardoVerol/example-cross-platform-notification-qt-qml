@@ -4,6 +4,28 @@
 #include <QSystemTrayIcon>
 #include <QStyle>
 
+
+// Check docs for a better-suited approach
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+#define MOBILE_OS
+#endif
+
+#if defined(Q_OS_WINDOWS) || defined(Q_OS_UNIX) || defined(Q_OS_MACOS)
+#define DESKTOP_OS
+#endif
+
+#if !defined(MOBILE_OS) && defined(DESKTOP_OS)
+#define IS_DESKTOP
+#endif
+
+#if defined (Q_OS_ANDROID)
+#include "src/Adapters/AndroidAdapter.h"
+#elif defined (Q_OS_IOS)
+#include "src/Adapters/IOSAdapter.h"
+#elif defined(IS_DESKTOP)
+#include "src/Adapters/DesktopAdapter.h"
+#endif
+
 ApplicationManager::ApplicationManager(QObject *parent)
     : QObject{parent}
 {
@@ -16,18 +38,22 @@ ApplicationManager::ApplicationManager(QObject *parent)
     this->setNotificationTitle(tr("Notification Title"));
     this->setNotificationBody(tr("Notification Body"));
 
-#if defined(IS_DESKTOP)
-    this->desktopAdapter = std::make_shared<DesktopAdapter>();
-#endif
+    this->osAdapter = this->buildAdapter();
 
     this->refreshIcon();
 
     QObject::connect(this, &ApplicationManager::iconSourceChanged, this, &ApplicationManager::refreshIcon );
 
-    QObject::connect(this->desktopAdapter.get(), &DesktopAdapter::iconActivated, this, &ApplicationManager::iconActivated );
-    QObject::connect(this->desktopAdapter.get(), &DesktopAdapter::showNormal, this, &ApplicationManager::showNormal );
-    QObject::connect(this->desktopAdapter.get(), &DesktopAdapter::quit, this, &ApplicationManager::quit );
-    QObject::connect(this->desktopAdapter.get(), &DesktopAdapter::notificationClicked, this, &ApplicationManager::notificationClicked );
+#if defined(IS_DESKTOP)
+    DesktopAdapter* desktopAdapter = dynamic_cast<DesktopAdapter*>(this->osAdapter);
+    if (desktopAdapter)
+    {
+        QObject::connect(desktopAdapter, &DesktopAdapter::iconActivated, this, &ApplicationManager::iconActivated );
+        QObject::connect(desktopAdapter, &DesktopAdapter::showNormal, this, &ApplicationManager::showNormal );
+        QObject::connect(desktopAdapter, &DesktopAdapter::quit, this, &ApplicationManager::quit );
+        QObject::connect(desktopAdapter, &DesktopAdapter::notificationClicked, this, &ApplicationManager::notificationClicked );
+    }
+#endif
 }
 
 void ApplicationManager::triggerNotification()
@@ -61,8 +87,16 @@ void ApplicationManager::triggerNotification()
         }
     }
 
-    this->desktopAdapter->createSystemNotification(this->notificationTitle(), this->notificationBody(), icon,
-                                                   this->notificationDuration());
+    DesktopAdapter* desktopAdapter = dynamic_cast<DesktopAdapter*>(this->osAdapter);
+    if (desktopAdapter)
+        desktopAdapter->createSystemNotification(this->notificationTitle(),
+                                                 this->notificationBody(),
+                                                 icon,
+                                                 this->notificationDuration());
+#elif
+    this->osAdapter->createSystemNotification(this->notificationTitle(),
+                                              this->notificationBody(),
+                                              this->notificationId());
 #endif
 
     emit createToastNotification(this->notificationTitle(), this->notificationBody(), this->notificationType(), this->notificationDuration());
@@ -152,6 +186,17 @@ void ApplicationManager::setNotificationBody(const QString &newNotificationBody)
     emit notificationBodyChanged();
 }
 
+OSAdapter *ApplicationManager::buildAdapter()
+{
+#if defined (Q_OS_ANDROID)
+    return new AndroidAdapter();
+#elif defined (Q_OS_IOS)
+    return new IOSAdapter();
+#elif defined(IS_DESKTOP)
+    return new DesktopAdapter();
+#endif
+}
+
 void ApplicationManager::iconActivated(int reason)
 {
     switch (reason)
@@ -186,7 +231,9 @@ void ApplicationManager::refreshIcon()
     QApplication::setWindowIcon(icon);
 
 #if defined(IS_DESKTOP)
-    this->desktopAdapter->setIcon(icon);
+    DesktopAdapter* desktopAdapter = dynamic_cast<DesktopAdapter*>(this->osAdapter);
+    if (desktopAdapter)
+        desktopAdapter->setIcon(icon);
 #endif
 
 }

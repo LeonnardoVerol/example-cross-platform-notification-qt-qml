@@ -3,8 +3,9 @@
 
 #include <QObject>
 #include <QSystemTrayIcon>
+#include "src/Adapters/OSAdapter.h"
 
-class DesktopAdapter : public QObject
+class DesktopAdapter : public OSAdapter
 {
     Q_OBJECT
 
@@ -13,7 +14,7 @@ public:
 
     void setIcon(const QIcon &icon);
 
-    void createSystemNotification(const QString &title, const QString &message, int notificationId = 1);
+    virtual void createSystemNotification(const QString &title, const QString &message, int notificationId = 1) override;
     void createSystemNotification(const QString &title, const QString &message, const QIcon &icon, int secs = 5);
 
 signals:

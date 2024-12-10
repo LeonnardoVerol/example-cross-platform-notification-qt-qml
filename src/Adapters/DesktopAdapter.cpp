@@ -6,7 +6,6 @@
 #include <QApplication>
 
 DesktopAdapter::DesktopAdapter(QObject *parent)
-    : QObject{parent}
 {
     QMenu *trayIconMenu = new QMenu();
 
