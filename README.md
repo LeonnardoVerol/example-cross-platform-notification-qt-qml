@@ -2,11 +2,11 @@
 
 ## About
 
-This is a mix of public code and examples put together and ported to QT 6+.
+This is a mix of public codes and examples put together and ported to QT 6+.
 
-I intentionally decided to use QSystemTrayIcon (C++) instead of its QML counterpart.
+I intentionally decided to use QSystemTrayIcon (C++) instead of its QML counterpart, for the Desktop Enviroment.
 
-## Code Origin
+## Code Origin & Inspiration
 
 - Toast Notification is a rework of an older adaptation of mine at [Authentication Example in QT / QML](https://github.com/LeonnardoVerol/example-authentication-qt-qml/tree/main)
 - Mobile Code from [qt-notification](https://github.com/SidoPillai/qt-notification)
