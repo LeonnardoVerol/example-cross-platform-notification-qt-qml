@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>src/ui/main.qml</file>
+        <file>src/ui/Form.qml</file>
+        <file>images/bad.png</file>
+        <file>images/heart.png</file>
+        <file>images/trash.png</file>
+        <file>src/ui/ToastInstantiator.qml</file>
+        <file>src/ui/ToastItem.qml</file>
+    </qresource>
+</RCC>
