@@ -1,5 +1,7 @@
 #include "AndroidAdapter.h"
 
+#include <QCoreApplication>
+
 AndroidAdapter::AndroidAdapter(QObject *parent)
 {}
 
@@ -17,7 +19,7 @@ void AndroidAdapter::createSystemNotification(const QString &title, const QStrin
         QNativeInterface::QAndroidApplication::context(),
         jni_title.object<jstring>(),                                            // "title" Parameter
         jni_message.object<jstring>(),                                          // "message" Parameter
-        static_cast<jint>(id));                                                 // "id" Parameter
+        static_cast<jint>(notificationId));                                     // "notificationId" Parameter
     /*
      * The signature structure is "(A...)R", where A is the type of
      * the argument(s) and R is the return type. Array types in

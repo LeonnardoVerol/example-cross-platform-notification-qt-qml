@@ -1,4 +1,4 @@
-QT += quick quickcontrols2 widgets
+QT += core quick quickcontrols2 widgets
 
 # Qt uses this to build Info.plist
 VERSION = 1.0.0

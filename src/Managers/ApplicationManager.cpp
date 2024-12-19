@@ -93,7 +93,7 @@ void ApplicationManager::triggerNotification()
                                                  this->notificationBody(),
                                                  icon,
                                                  this->notificationDuration());
-#elif
+#else
     this->osAdapter->createSystemNotification(this->notificationTitle(),
                                               this->notificationBody(),
                                               this->notificationId());
