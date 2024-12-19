@@ -3,10 +3,6 @@ import Manager.Application
 
 ListView {
     id: control
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    anchors.left: parent.left
-    anchors.margins: 30
     width: 320
 
     spacing: 5
@@ -14,14 +10,14 @@ ListView {
     z: Infinity // Global value in QML
     interactive: false
 
-    model: ListModel {id: model}
+    model: ListModel { id: listModel }
 
     Connections {
         target: ApplicationManager
 
         function onCreateToastNotification(title, body, type, duration)
         {
-            model.insert(0, {
+            listModel.append({
                                 title,
                                 body,
                                 type,
@@ -32,7 +28,7 @@ ListView {
 
     function remove(index)
     {
-        model.remove(index);
+        listModel.remove(index);
     }
 
     displaced: Transition {
@@ -51,6 +47,15 @@ ListView {
 
         onSelfDestroy: (index) => {
             control.remove(index);
+        }
+
+        Connections {
+            target: listModel
+
+            function onCountChanged()
+            {
+                nextInLine();
+            }
         }
     }
 }

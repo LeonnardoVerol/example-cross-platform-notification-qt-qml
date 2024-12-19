@@ -35,9 +35,17 @@ Pane {
         Critical
     }
 
+    function nextInLine()
+    {
+        if(index === 0)
+            fadeOutAnimation.start();
+    }
+
     Component.onCompleted: {
-        control.toastDuration = toastDuration;
-        animation.start();
+        fadeInAnimation.start();
+
+        if(index === 0)
+            fadeOutAnimation.start();
     }
 
     states: [
@@ -127,7 +135,7 @@ Pane {
     }
 
     SequentialAnimation {
-        id: animation
+        id: fadeInAnimation
 
         NumberAnimation {
             target: control
@@ -135,6 +143,10 @@ Pane {
             to: 0.9
             duration: control.fadeTime
         }
+    }
+
+    SequentialAnimation {
+        id: fadeOutAnimation
 
         NumberAnimation {
             target: durationBar
